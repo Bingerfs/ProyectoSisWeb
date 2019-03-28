@@ -1,0 +1,118 @@
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="shared-styles.html">
+<link rel="import" href="../my-mixin.html">
+
+<dom-module id="home-view">
+  <template>
+
+    
+    <style>
+
+      :host {
+        display: block;
+        position: relative;
+        overflow: hidden;
+      }
+
+      div > ::slotted(:not([selected])) {
+        display: none;
+      }
+
+      button {
+        position: absolute;
+        top: calc(50% - 20px);
+        padding: 0;
+        line-height: 40px;
+        border: none;
+        background: none;
+        color: #DDD;
+        font-size: 40px;
+        font-weight: bold;
+        opacity: 0.7;
+      }
+
+      button:hover,
+      button:focus {
+        opacity: 1;
+      }
+
+      #prevBtn {
+        left: 12px;
+      }
+
+      #nextBtn {
+        right: 12px;
+      }
+
+      button[disabled] {
+        opacity: 0.4;
+      }
+
+    </style>
+
+    <div>
+      <slot></slot>
+      <div>
+        <blockquote>Welcome to the Pikachu tech website for SSBU. This is where we'll share a bunch of information
+          regarding our main little yellow tech-wise, frame data, combos and other pretty interesting stuff.
+          Information will be presented in many forms such as pdf docs, plain text guides, video guides as well as some vod's displaying pikachu players in tournaments. 
+        </blockquote>
+      </div>
+    </div>
+
+    <button id="prevBtn" on-click="previous">&#x276E;</button>
+    <button id="nextBtn" on-click="next">&#x276F;</button>
+
+  </template>
+
+  <script>
+
+    
+    class MyCarousel extends MyMixin(Polymer.Element) {
+
+      static get is() { return 'home-view' }
+
+      _selectedChanged(selected, oldSelected) {
+        super._selectedChanged(selected, oldSelected);
+
+        if (selected) {
+          this.$.prevBtn.disabled = !selected.previousElementSibling;
+          this.$.nextBtn.disabled = !selected.nextElementSibling;
+
+          this._loadImage(selected);
+          this._loadImage(selected.previousElementSibling);
+          this._loadImage(selected.nextElementSibling);
+        } else {
+          this.$.prevBtn.disabled = true;
+          this.$.nextBtn.disabled = true;
+        }
+      }
+
+      previous() {
+        const elem = this.selected && this.selected.previousElementSibling;
+        if (elem) {
+          this.selected = elem;
+        }
+      }
+
+      next() {
+        const elem = this.selected && this.selected.nextElementSibling;
+        if (elem) {
+          this.selected = elem;
+        }
+      }
+
+      _loadImage(img) {
+        if (img && !img.src) {
+          img.src = img.getAttribute('data-src');
+        }
+      }
+
+    }
+
+    window.customElements.define(MyCarousel.is, MyCarousel);
+
+  </script>
+</dom-module>
